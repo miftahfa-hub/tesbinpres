@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>CBT Bina Prestasi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: ruang ujian CBT yang ceria. Bilah atas bergaris empat warna, kartu soal di kiri, navigator nomor di kanan; satu kolom di layar sempit. */
+:root{
+  --bg:#f1f5ff; --glow1:rgba(255,180,31,.20); --glow2:rgba(138,92,246,.14);
+  --surface:#ffffff; --surface-2:#f3f6fd; --ink:#1a2342; --muted:#586484; --line:#d6dff2; --shadow:0 8px 24px rgba(40,60,140,.10);
+  --brand:#2f5bea; --brand-ink:#ffffff; --brand-soft:#e2e9ff;
+  --c1:#ff5d4d; --c2:#ffb41f; --c3:#0fb09c; --c4:#8a5cf6; --c1i:#fff; --c2i:#2b2000; --c3i:#fff; --c4i:#fff;
+  --warn:#a85100; --warn-soft:#fff0d4; --good:#0b7a5f; --good-soft:#d8f5ec; --bad:#c2271a; --bad-soft:#ffe3df;
+  --head-bg:#16236b; --head-ink:#ffffff;
+  --font:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1224; --glow1:rgba(255,180,31,.07); --glow2:rgba(138,92,246,.14);
+  --surface:#171e38; --surface-2:#1e2745; --ink:#eaeefc; --muted:#a0abcc; --line:#2f3a63; --shadow:none;
+  --brand:#6f93ff; --brand-ink:#08102c; --brand-soft:#1e2a55;
+  --c1:#ff7a6b; --c2:#ffc43d; --c3:#2ed1bb; --c4:#a784ff; --c1i:#2a0a06; --c3i:#032a24; --c4i:#150a3a;
+  --warn:#ffc43d; --warn-soft:#3a2d0c; --good:#4fdcb4; --good-soft:#0f3a30; --bad:#ff8e82; --bad-soft:#42171a;
+  --head-bg:#0a1040; --head-ink:#eaeefc; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1224; --glow1:rgba(255,180,31,.07); --glow2:rgba(138,92,246,.14);
+  --surface:#171e38; --surface-2:#1e2745; --ink:#eaeefc; --muted:#a0abcc; --line:#2f3a63; --shadow:none;
+  --brand:#6f93ff; --brand-ink:#08102c; --brand-soft:#1e2a55;
+  --c1:#ff7a6b; --c2:#ffc43d; --c3:#2ed1bb; --c4:#a784ff; --c1i:#2a0a06; --c3i:#032a24; --c4i:#150a3a;
+  --warn:#ffc43d; --warn-soft:#3a2d0c; --good:#4fdcb4; --good-soft:#0f3a30; --bad:#ff8e82; --bad-soft:#42171a;
+  --head-bg:#0a1040; --head-ink:#eaeefc; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background-color:var(--bg);background-image:radial-gradient(700px 420px at 0 0,var(--glow1),transparent 65%),radial-gradient(640px 460px at 100% 12%,var(--glow2),transparent 65%);background-attachment:fixed;
+  color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.55;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--head-bg);z-index:30}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--c2);outline-offset:2px}
+.wrap{max-width:1120px;margin-inline:auto}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* bilah atas */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--head-bg);color:var(--head-ink);
+  margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--c1) 0 25%,var(--c2) 0 50%,var(--c3) 0 75%,var(--c4) 0)}
+.top .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:10px 14px}
+.brand{font-weight:700;letter-spacing:.01em;font-size:1.1rem;display:flex;align-items:center;gap:10px}
+.brand svg{flex:none}
+.brand small{display:block;font-weight:400;font-size:.72rem;opacity:.8;letter-spacing:.05em;text-transform:uppercase}
+.who{flex:1;min-width:0;font-size:.92rem;opacity:.95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clock{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:1.2rem;background:rgba(255,255,255,.14);padding:4px 14px;border-radius:99px}
+.clock span{font-family:var(--font);font-weight:500;font-size:.7rem;opacity:.85;margin-right:8px;text-transform:uppercase;letter-spacing:.05em}
+.clock.warn{background:var(--c2);color:var(--c2i)}
+.clock.crit{background:var(--c1);color:var(--c1i)}
+
+/* tombol */
+.btn{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 16px;cursor:pointer;font-weight:600;min-height:44px;transition:transform .12s,box-shadow .12s,border-color .12s}
+.btn:hover{border-color:var(--brand);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.warn{background:var(--warn-soft);border-color:var(--c2);color:var(--warn)}
+.btn.warn[aria-pressed="true"]{background:var(--c2);color:var(--c2i);border-color:var(--c2)}
+.btn.sm{min-height:38px;padding:6px 14px;font-size:.9rem}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.top .btn.finish{background:var(--c2);color:var(--c2i);border-color:var(--c2)}
+
+/* halaman awal */
+.start{max-width:680px;margin:36px auto 0;display:grid;gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow)}
+.hero{position:relative;overflow:hidden;padding-right:150px}
+.hero svg{position:absolute;right:10px;top:10px;width:150px;height:auto}
+.start h1{font-size:1.8rem;line-height:1.18;text-wrap:balance;margin-bottom:8px}
+.start .lead{color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:20px;position:relative}
+.fact{border-radius:14px;padding:12px 14px;background:color-mix(in srgb,var(--fc) 16%,var(--surface));border:1.5px solid var(--fc)}
+.fact:nth-child(1){--fc:var(--c1)} .fact:nth-child(2){--fc:var(--c3)} .fact:nth-child(3){--fc:var(--c4)}
+.fact b{display:block;font-size:1.6rem;font-family:var(--mono);line-height:1.2}
+.fact span{font-size:.82rem;color:var(--muted)}
+label.f{display:grid;gap:6px;font-weight:600;font-size:.92rem}
+input.t{font:inherit;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);width:100%}
+input.t:focus{border-color:var(--brand)}
+.form{display:grid;gap:14px}
+.rules{margin:0;padding-left:1.1em;color:var(--muted);font-size:.93rem;display:grid;gap:4px}
+.resume{background:var(--warn-soft);border:1.5px solid var(--c2);border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.resume p{flex:1;min-width:200px}
+
+/* ruang ujian */
+.exam{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;margin-top:18px;align-items:start}
+.qcard{padding:0;overflow:hidden}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 20px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--qc,var(--c1)) 13%,var(--surface))}
+.qno{font-weight:700;font-size:1.05rem;display:flex;align-items:center;gap:12px}
+.badge{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:1.3rem;background:var(--qc,var(--c1));color:var(--qi,var(--c1i))}
+.qno small{display:block;font-weight:500;font-size:.8rem;color:var(--muted)}
+.pill{display:inline-block;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--brand-soft);color:var(--brand);letter-spacing:.02em}
+.pill.M{background:var(--good-soft);color:var(--good)} .pill.S{background:var(--warn-soft);color:var(--warn)} .pill.K{background:var(--bad-soft);color:var(--bad)}
+.qhead .pill{background:var(--surface);border:1.5px solid var(--qc,var(--c1));color:var(--ink)}
+.qbody{padding:22px 20px 8px}
+.qtext{font-size:1.18rem;line-height:1.6;max-width:70ch;text-wrap:pretty}
+.opts{display:grid;gap:10px;margin-top:20px}
+.opt{--oc:var(--c1);--oi:var(--c1i);display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;border:2px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer;min-height:54px;transition:transform .12s,border-color .12s,background .12s}
+.opt:nth-child(2){--oc:var(--c2);--oi:var(--c2i)} .opt:nth-child(3){--oc:var(--c3);--oi:var(--c3i)} .opt:nth-child(4){--oc:var(--c4);--oi:var(--c4i)}
+.opt:hover{border-color:var(--oc);transform:translateX(3px)}
+.ltr{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-weight:600;border:2px solid var(--oc);color:var(--ink);background:color-mix(in srgb,var(--oc) 16%,var(--surface))}
+.otx{padding-top:4px;font-size:1.05rem;overflow-wrap:anywhere}
+.opt[aria-checked="true"]{border-color:var(--oc);background:color-mix(in srgb,var(--oc) 16%,var(--surface));box-shadow:0 0 0 3px color-mix(in srgb,var(--oc) 28%,transparent)}
+.opt[aria-checked="true"] .ltr{background:var(--oc);color:var(--oi)}
+.cheerslot{min-height:68px;margin:14px 20px 0}
+.cheer{--cc:var(--c3);--ci:var(--c3i);display:flex;gap:12px;align-items:center;padding:11px 14px;border-radius:16px;background:var(--brand-soft);background:color-mix(in srgb,var(--cc) 15%,var(--surface));border:2px solid var(--cc);animation:pop .3s ease-out}
+.cheer .ic{flex:none;width:38px;height:38px;border-radius:50%;background:var(--cc);color:var(--ci);display:grid;place-items:center}
+.cheer p{font-weight:600;line-height:1.35}
+@keyframes pop{from{transform:translateY(8px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.qfoot{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 20px 20px}
+.qfoot .sp{flex:1}
+.clear{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px}
+
+/* navigator */
+.nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);display:grid;gap:14px}
+.nav h2{font-size:1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px}
+.qn{aspect-ratio:1;min-width:0;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;cursor:pointer;font-family:var(--mono);font-weight:600;font-size:.9rem}
+.qn.done{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.qn.flag{background:var(--c2);border-color:var(--c2);color:var(--c2i)}
+.qn.cur{outline:3px solid var(--c1);outline-offset:1px}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;font-size:.82rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;border:1.5px solid var(--line);vertical-align:-2px;margin-right:6px;background:var(--surface)}
+.legend i.d{background:var(--brand);border-color:var(--brand)} .legend i.w{background:var(--c2);border-color:var(--c2)}
+.prog{height:12px;background:var(--surface-2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.prog b{display:block;height:100%;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4));background-size:var(--pw,100%) 100%;width:0;transition:width .35s}
+.keys{font-size:.8rem;color:var(--muted)}
+kbd{font-family:var(--mono);font-size:.78rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--surface-2)}
+
+/* dialog konfirmasi */
+.veil{position:fixed;inset:0;background:rgba(8,12,40,.62);display:grid;place-items:center;z-index:50;padding:16px}
+.dlg{max-width:440px;width:100%;display:grid;gap:14px}
+.dlg h2{font-size:1.25rem}
+.tally{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.tally div{border-radius:12px;padding:10px 4px;background:color-mix(in srgb,var(--tc) 16%,var(--surface));border:1.5px solid var(--tc)}
+.tally div:nth-child(1){--tc:var(--c3)} .tally div:nth-child(2){--tc:var(--c1)} .tally div:nth-child(3){--tc:var(--c2)}
+.tally b{display:block;font-family:var(--mono);font-size:1.4rem}
+.tally span{font-size:.78rem;color:var(--muted)}
+.row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+/* hasil */
+.res{margin-top:24px;display:grid;gap:16px}
+.score{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;position:relative;overflow:hidden}
+.scorebox{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;text-align:center;background:conic-gradient(var(--c1),var(--c2),var(--c3),var(--c4),var(--c1));padding:8px}
+.scorebox div{width:100%;height:100%;border-radius:50%;background:var(--surface);display:grid;place-content:center}
+.big{font-family:var(--mono);font-weight:600;font-size:3.2rem;line-height:1;letter-spacing:-.02em}
+.scorebox small{font-size:.85rem;color:var(--muted)}
+.cheerline{font-weight:600;color:var(--brand);margin-bottom:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px}
+.stat{border-radius:12px;padding:10px 14px;background:color-mix(in srgb,var(--sc) 15%,var(--surface));border:1.5px solid var(--sc)}
+.stat b{display:block;font-family:var(--mono);font-size:1.4rem}
+.stat span{font-size:.8rem;color:var(--muted)}
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:minmax(120px,170px) 1fr 64px;gap:12px;align-items:center;font-size:.93rem}
+.track{height:14px;background:var(--surface-2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.track b{display:block;height:100%;border-radius:99px;background:var(--bc,var(--brand))}
+.bar .v{text-align:right;font-family:var(--mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rv{display:grid;gap:14px}
+.rvi{padding:18px 20px;display:grid;gap:10px}
+.rvi .h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rvi .no{font-family:var(--mono);font-weight:600}
+.st{font-weight:700;font-size:.8rem;padding:2px 10px;border-radius:99px}
+.st.ok{background:var(--good-soft);color:var(--good)} .st.no{background:var(--bad-soft);color:var(--bad)} .st.nil{background:var(--warn-soft);color:var(--warn)}
+.ro{display:flex;gap:10px;align-items:baseline;padding:8px 12px;border-radius:10px;border:1px solid var(--line);font-size:.97rem}
+.ro b{font-family:var(--mono);flex:none}
+.ro.key{background:var(--good-soft);border-color:var(--good)}
+.ro.mine{background:var(--bad-soft);border-color:var(--bad)}
+.ro em{margin-left:auto;font-style:normal;font-size:.76rem;font-weight:600;flex:none}
+.exp{background:var(--surface-2);border-radius:10px;padding:10px 12px;font-size:.93rem}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filters .btn[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+
+/* istirahat: tic tac toe */
+.offer{display:grid;gap:10px;padding:12px 14px;border-radius:16px;margin-top:10px;border:2px solid var(--c2);background:var(--warn-soft);background:color-mix(in srgb,var(--c2) 18%,var(--surface))}
+.offer .row{justify-content:flex-start}
+.game{max-width:420px;text-align:center}
+.gtop{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.gtop h2{font-size:1.15rem;text-align:left}
+.gclock{font-weight:600;font-size:1.3rem;background:var(--c4);color:var(--c4i);padding:2px 12px;border-radius:99px}
+.gmsg{font-weight:600;min-height:1.6em}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:300px;width:100%;margin-inline:auto}
+.cell{aspect-ratio:1;border-radius:14px;border:2px solid var(--line);background:var(--surface-2);cursor:pointer;font-family:var(--mono);font-weight:600;font-size:2.6rem;line-height:1;display:grid;place-items:center;padding:0;min-width:0}
+.cell:hover:not(:disabled){border-color:var(--brand)}
+.cell.X{color:var(--c1)} .cell.O{color:var(--c3)}
+.cell.win{background:var(--c2);border-color:var(--c2);color:var(--c2i)}
+.cell:disabled{cursor:default}
+.gscore{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.gscore b{font-family:var(--mono);color:var(--ink);margin-left:4px}
+.game .row{justify-content:center}
+@media (max-width:860px){
+  .exam{grid-template-columns:minmax(0,1fr)}
+  .nav{position:static}
+  .two{grid-template-columns:1fr}
+  .score{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .who{order:3;flex-basis:100%}
+  .keys{display:none}
+}
+@media (max-width:560px){
+  .hero{padding-right:24px;padding-top:110px}
+  .hero svg{left:50%;right:auto;transform:translateX(-50%);width:120px;top:10px}
+  .bar{grid-template-columns:1fr 56px}
+  .bar .track{grid-column:1 / -1;order:3}
+  .qbody{padding-inline:16px}.qhead,.qfoot{padding-inline:16px}.cheerslot{margin-inline:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="9" cy="10" r="6" fill="var(--c1)"/><rect x="19" y="4" width="11" height="11" rx="2" fill="var(--c2)"/><path d="M4 30 L14 18 L24 30Z" fill="var(--c3)"/><circle cx="27" cy="26" r="5" fill="none" stroke="var(--c4)" stroke-width="3"/></svg><span>Bina Prestasi<small>Ujian berbasis komputer</small></span></div>
+  <div class="who" id="who"></div>
+  <div class="clock" id="clockBox" hidden><span>Sisa waktu</span><b id="clock">40:00</b></div>
+  <button class="btn finish sm" id="finishTop" type="button" hidden>Selesai ujian</button>
+</div></header>
+
+<main class="wrap">
+
+<section id="vStart" class="start">
+  <div class="card hero">
+    <svg viewBox="0 0 150 120" aria-hidden="true"><circle cx="38" cy="36" r="26" fill="var(--c1)"/><rect x="78" y="8" width="52" height="52" rx="10" fill="var(--c2)" transform="rotate(12 104 34)"/><path d="M20 112 L62 62 L104 112Z" fill="var(--c3)"/><circle cx="120" cy="92" r="20" fill="none" stroke="var(--c4)" stroke-width="10"/></svg>
+    <h1>Ujian Matematika Fase C</h1>
+    <p class="lead">Kerjakan 50 soal pilihan ganda dengan tenang dan percaya diri. Setiap ujian memilih soal secara acak dari bank soal, dari yang mudah sampai sulit.</p>
+    <div class="facts">
+      <div class="fact"><b>50</b><span>soal pilihan ganda</span></div>
+      <div class="fact"><b>A–D</b><span>satu jawaban benar</span></div>
+      <div class="fact"><b>40</b><span>menit waktu mengerjakan</span></div>
+    </div>
+  </div>
+  <div id="resumeBox" class="resume" hidden>
+    <p id="resumeTxt"></p>
+    <button class="btn primary sm" id="btnResume" type="button">Lanjutkan</button>
+  </div>
+  <form class="card form" id="startForm" autocomplete="off">
+    <label class="f" for="inName">Nama lengkap<input class="t" id="inName" type="text" required maxlength="60" placeholder="Nama siswa"></label>
+    <label class="f" for="inClass">Kelas<input class="t" id="inClass" type="text" maxlength="30" placeholder="Contoh: 6 Abu Hurairah"></label>
+    <ul class="rules">
+      <li>Pengatur waktu menghitung mundur dari 40 menit. Saat waktu habis, ujian otomatis diselesaikan dan jawaban yang sudah terisi dinilai.</li>
+      <li>Tandai soal yang ragu-ragu, lalu kembali lewat daftar nomor.</li>
+      <li>Jawaban tersimpan otomatis di perangkat ini. Kalau halaman tertutup, ujian bisa dilanjutkan, tetapi waktu tetap berjalan.</li>
+      <li>Setiap selesai 10 soal (10, 20, 30, dan 40) ada kesempatan istirahat 90 detik untuk bermain Tic Tac Toe melawan bot. Waktu ujian berhenti selama bermain.</li>
+      <li>Kalkulator tidak boleh dipakai. Untuk lingkaran gunakan π = 22/7.</li>
+    </ul>
+    <button class="btn primary" type="submit">Mulai ujian</button>
+  </form>
+</section>
+
+<section id="vExam" class="exam" hidden>
+  <article class="card qcard" aria-live="polite">
+    <div class="qhead"><div class="qno"><span class="badge" id="qNo">1</span><span>Soal ke-<span id="qNo2">1</span><small>dari <span id="qTot">50</span> soal</small></span></div><span class="pill" id="qTopic"></span></div>
+    <div class="qbody"><p class="qtext" id="qText"></p><div class="opts" id="opts" role="radiogroup" aria-label="Pilihan jawaban"></div></div>
+    <div class="cheerslot" id="cheerSlot" aria-live="polite"></div>
+    <div class="qfoot">
+      <button class="btn" id="bPrev" type="button">← Sebelumnya</button>
+      <button class="btn warn" id="bFlag" type="button" aria-pressed="false">Ragu-ragu</button>
+      <button class="clear" id="bClear" type="button">Hapus jawaban</button>
+      <span class="sp"></span>
+      <button class="btn primary" id="bNext" type="button">Berikutnya →</button>
+    </div>
+  </article>
+  <aside class="card nav" aria-label="Daftar soal">
+    <h2>Daftar soal</h2>
+    <div class="prog" aria-hidden="true"><b id="progBar"></b></div>
+    <div class="keys" id="progTxt"></div>
+    <div class="grid" id="grid"></div>
+    <div class="legend"><span><i></i>Belum dijawab</span><span><i class="d"></i>Sudah dijawab</span><span><i class="w"></i>Ragu-ragu</span></div>
+    <div class="keys"><kbd>A</kbd>–<kbd>D</kbd> pilih jawaban · <kbd>←</kbd><kbd>→</kbd> pindah soal · <kbd>R</kbd> ragu-ragu</div>
+  </aside>
+</section>
+
+<section id="vRes" class="res" hidden></section>
+</main>
+
+<div class="veil" id="veil" hidden>
+  <div class="card dlg" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+    <h2 id="dTitle">Akhiri ujian?</h2>
+    <div class="tally"><div><b id="tDone">0</b><span>dijawab</span></div><div><b id="tBlank">0</b><span>kosong</span></div><div><b id="tFlag">0</b><span>ragu-ragu</span></div></div>
+    <p id="dNote" style="color:var(--muted);font-size:.93rem"></p>
+    <div class="row"><button class="btn" id="dBack" type="button">Kembali mengerjakan</button><button class="btn primary" id="dOk" type="button">Selesaikan</button></div>
+  </div>
+</div>
+
+<div class="veil" id="gveil" hidden>
+  <div class="card dlg game" role="dialog" aria-modal="true" aria-labelledby="gTitle">
+    <div class="gtop"><h2 id="gTitle">Istirahat: Tic Tac Toe</h2><div class="gclock" id="gClock">1:30</div></div>
+    <div class="prog" aria-hidden="true"><b id="gBar" style="width:100%"></b></div>
+    <p class="gmsg" id="gMsg" aria-live="polite"></p>
+    <div class="board" id="board"></div>
+    <div class="gscore"><span>Menang<b id="gW">0</b></span><span>Seri<b id="gD">0</b></span><span>Kalah<b id="gL">0</b></span></div>
+    <p style="font-size:.85rem;color:var(--muted)">Kamu bermain sebagai X melawan bot (O). Waktu ujian berhenti selama istirahat.</p>
+    <div class="row"><button class="btn" id="gStop" type="button">Kembali ke soal</button></div>
+  </div>
+</div>
+
+<script>
+const BANK = [{"id": 0, "lv": "M", "topic": "Bilangan", "t": "Nilai angka 7 pada bilangan 4.073.215 adalah …", "o": ["70.000", "7.000", "700.000", "7.000.000"], "c": 0, "e": "Angka 7 berada pada tempat puluh ribuan, nilainya 70.000."}, {"id": 1, "lv": "M", "topic": "Bilangan", "t": "5.280 + 3.745 = …", "o": ["8.925", "9.125", "9.025", "9.035"], "c": 2, "e": "5.280 + 3.745 = 9.025."}, {"id": 2, "lv": "M", "topic": "Bilangan", "t": "8.000 − 2.468 = …", "o": ["5.532", "5.632", "6.532", "5.542"], "c": 0, "e": "8.000 − 2.468 = 5.532."}, {"id": 3, "lv": "M", "topic": "Bilangan", "t": "36 × 25 = …", "o": ["720", "860", "900", "1.000"], "c": 2, "e": "36 × 25 = 36 × 100 ÷ 4 = 900."}, {"id": 4, "lv": "M", "topic": "Pecahan", "t": "2/5 + 1/5 = …", "o": ["3/10", "2/5", "1/5", "3/5"], "c": 3, "e": "Penyebut sama: (2+1)/5 = 3/5."}, {"id": 5, "lv": "M", "topic": "Pecahan", "t": "Pecahan yang senilai dengan 3/4 adalah …", "o": ["4/6", "6/8", "5/8", "3/8"], "c": 1, "e": "3/4 = (3×2)/(4×2) = 6/8."}, {"id": 6, "lv": "M", "topic": "Pecahan", "t": "Bentuk pecahan paling sederhana dari 0,5 adalah …", "o": ["1/5", "1/20", "1/2", "5/100"], "c": 2, "e": "0,5 = 5/10 = 1/2."}, {"id": 7, "lv": "M", "topic": "Pecahan", "t": "50% dari 200 adalah …", "o": ["100", "25", "50", "150"], "c": 0, "e": "50% = 1/2; 1/2 × 200 = 100."}, {"id": 8, "lv": "M", "topic": "Bangun Datar", "t": "Luas persegi dengan panjang sisi 12 cm adalah …", "o": ["24 cm²", "48 cm²", "124 cm²", "144 cm²"], "c": 3, "e": "12 × 12 = 144."}, {"id": 9, "lv": "M", "topic": "Bangun Datar", "t": "Keliling persegi panjang dengan panjang 15 cm dan lebar 8 cm adalah …", "o": ["23 cm", "92 cm", "46 cm", "120 cm"], "c": 2, "e": "2 × (15 + 8) = 46."}, {"id": 10, "lv": "M", "topic": "Bangun Datar", "t": "Luas segitiga dengan alas 10 cm dan tinggi 6 cm adalah …", "o": ["16 cm²", "32 cm²", "30 cm²", "60 cm²"], "c": 2, "e": "1/2 × 10 × 6 = 30."}, {"id": 11, "lv": "M", "topic": "Bangun Datar", "t": "Dua sudut segitiga besarnya 55° dan 70°. Sudut ketiga adalah …", "o": ["45°", "65°", "125°", "55°"], "c": 3, "e": "180° − 125° = 55°."}, {"id": 12, "lv": "M", "topic": "Bangun Ruang", "t": "Volume balok berukuran 12 cm × 8 cm × 5 cm adalah …", "o": ["96 cm³", "192 cm³", "480 cm³", "400 cm³"], "c": 2, "e": "12 × 8 × 5 = 480."}, {"id": 13, "lv": "M", "topic": "Bangun Ruang", "t": "Volume kubus dengan panjang rusuk 6 cm adalah …", "o": ["18 cm³", "36 cm³", "72 cm³", "216 cm³"], "c": 3, "e": "6 × 6 × 6 = 216."}, {"id": 14, "lv": "M", "topic": "Bangun Ruang", "t": "Banyak rusuk pada sebuah kubus adalah …", "o": ["6", "8", "10", "12"], "c": 3, "e": "Kubus memiliki 12 rusuk."}, {"id": 15, "lv": "M", "topic": "Bangun Ruang", "t": "Banyak titik sudut pada sebuah balok adalah …", "o": ["6", "10", "8", "12"], "c": 2, "e": "Balok memiliki 8 titik sudut."}, {"id": 16, "lv": "M", "topic": "Pola Bilangan", "t": "Pola bilangan 2, 4, 6, 8, … Bilangan berikutnya adalah …", "o": ["9", "11", "12", "10"], "c": 3, "e": "Bertambah 2 → 10."}, {"id": 17, "lv": "M", "topic": "Pola Bilangan", "t": "Pola bilangan 1, 4, 9, 16, … Bilangan berikutnya adalah …", "o": ["20", "24", "25", "36"], "c": 2, "e": "Bilangan kuadrat: 5² = 25."}, {"id": 18, "lv": "M", "topic": "Pola Bilangan", "t": "Pola bilangan 3, 6, 12, 24, … Bilangan berikutnya adalah …", "o": ["36", "48", "42", "96"], "c": 1, "e": "Dikali 2 → 48."}, {"id": 19, "lv": "M", "topic": "Pola Bilangan", "t": "Pola bilangan 100, 95, 90, … Bilangan berikutnya adalah …", "o": ["85", "75", "80", "95"], "c": 0, "e": "Berkurang 5 → 85."}, {"id": 20, "lv": "M", "topic": "Keterbagian", "t": "Bilangan yang habis dibagi 3 adalah …", "o": ["4.520", "4.521", "4.522", "4.523"], "c": 1, "e": "Jumlah angka 4+5+2+1 = 12 (kelipatan 3)."}, {"id": 21, "lv": "M", "topic": "Keterbagian", "t": "Bilangan yang habis dibagi 5 adalah …", "o": ["3.462", "3.463", "3.468", "3.465"], "c": 3, "e": "Habis dibagi 5 jika angka satuannya 0 atau 5."}, {"id": 22, "lv": "M", "topic": "Keterbagian", "t": "Bilangan yang habis dibagi 10 adalah …", "o": ["2.562", "2.565", "2.560", "2.567"], "c": 2, "e": "Habis dibagi 10 jika angka satuannya 0."}, {"id": 23, "lv": "M", "topic": "Keterbagian", "t": "Bilangan yang habis dibagi 9 adalah …", "o": ["2.347", "2.349", "2.348", "2.350"], "c": 1, "e": "Jumlah angka 2+3+4+9 = 18 (kelipatan 9)."}, {"id": 24, "lv": "M", "topic": "Matematika Dasar", "t": "2 jam 15 menit = … menit", "o": ["115", "135", "125", "215"], "c": 1, "e": "2 × 60 + 15 = 135."}, {"id": 25, "lv": "M", "topic": "Matematika Dasar", "t": "3,5 kg = … gram", "o": ["3.500", "305", "350", "35.000"], "c": 0, "e": "3,5 × 1.000 = 3.500."}, {"id": 26, "lv": "M", "topic": "Matematika Dasar", "t": "Data: 7, 5, 8, 6, 9, 7, 5, 7. Modus data tersebut adalah …", "o": ["5", "6", "7", "8"], "c": 2, "e": "Angka 7 muncul paling banyak (3 kali)."}, {"id": 27, "lv": "M", "topic": "Matematika Dasar", "t": "Nilai matematika lima siswa: 70, 85, 90, 75, 80. Rata-rata nilainya adalah …", "o": ["75", "80", "78", "82"], "c": 1, "e": "400 ÷ 5 = 80."}, {"id": 28, "lv": "M", "topic": "Matematika Dasar", "t": "Ibu membeli 3 buku @ Rp4.500 dan membayar dengan uang Rp20.000. Uang kembaliannya adalah …", "o": ["Rp6.000", "Rp6.500", "Rp7.000", "Rp7.500"], "c": 1, "e": "3 × 4.500 = 13.500; 20.000 − 13.500 = 6.500."}, {"id": 29, "lv": "S", "topic": "Bilangan", "t": "245 × 36 = …", "o": ["7.820", "8.720", "9.220", "8.820"], "c": 3, "e": "245 × 36 = 7.350 + 1.470 = 8.820."}, {"id": 30, "lv": "S", "topic": "Bilangan", "t": "4.368 ÷ 24 = …", "o": ["182", "172", "192", "1.820"], "c": 0, "e": "24 × 182 = 4.368."}, {"id": 31, "lv": "S", "topic": "Bilangan", "t": "(−8) × 5 + 72 ÷ (−6) = …", "o": ["−68", "−52", "−28", "52"], "c": 1, "e": "−40 + (−12) = −52."}, {"id": 32, "lv": "S", "topic": "Bilangan", "t": "Bilangan 4.567 dibulatkan ke ratusan terdekat menjadi …", "o": ["4.500", "4.570", "4.600", "5.000"], "c": 2, "e": "Angka puluhan 6 (≥5), maka ratusan naik: 4.600."}, {"id": 33, "lv": "S", "topic": "Bilangan", "t": "2³ × 3² − 5² = …", "o": ["43", "47", "57", "67"], "c": 1, "e": "8 × 9 − 25 = 72 − 25 = 47."}, {"id": 34, "lv": "S", "topic": "Bilangan", "t": "Banyak bilangan prima antara 20 dan 50 adalah …", "o": ["6", "8", "9", "7"], "c": 3, "e": "23, 29, 31, 37, 41, 43, 47 → 7 bilangan."}, {"id": 35, "lv": "S", "topic": "Pecahan", "t": "3/4 + 2/5 = …", "o": ["5/9", "11/20", "3/10", "1 3/20"], "c": 3, "e": "15/20 + 8/20 = 23/20 = 1 3/20."}, {"id": 36, "lv": "S", "topic": "Pecahan", "t": "5/6 − 1/4 = …", "o": ["7/12", "1/2", "2/3", "11/12"], "c": 0, "e": "10/12 − 3/12 = 7/12."}, {"id": 37, "lv": "S", "topic": "Pecahan", "t": "2 1/2 × 3/5 = …", "o": ["1 1/2", "3/5", "2 1/10", "2"], "c": 0, "e": "5/2 × 3/5 = 15/10 = 1 1/2."}, {"id": 38, "lv": "S", "topic": "Pecahan", "t": "4,5 × 1,2 + 3,75 = …", "o": ["0,915", "9,15", "8,55", "10,65"], "c": 1, "e": "4,5 × 1,2 = 5,4; 5,4 + 3,75 = 9,15."}, {"id": 39, "lv": "S", "topic": "Pecahan", "t": "Pecahan terbesar di antara 3/5, 5/8, 7/10, dan 2/3 adalah …", "o": ["3/5", "5/8", "7/10", "2/3"], "c": 2, "e": "Desimalnya 0,6; 0,625; 0,7; 0,667 → terbesar 7/10."}, {"id": 40, "lv": "S", "topic": "Bangun Datar", "t": "Trapesium dengan sisi sejajar 10 cm dan 18 cm serta tinggi 7 cm memiliki luas …", "o": ["70 cm²", "126 cm²", "196 cm²", "98 cm²"], "c": 3, "e": "(10 + 18) × 7 ÷ 2 = 98."}, {"id": 41, "lv": "S", "topic": "Bangun Datar", "t": "Luas lingkaran berjari-jari 14 cm (π = 22/7) adalah …", "o": ["88 cm²", "308 cm²", "616 cm²", "1.232 cm²"], "c": 2, "e": "22/7 × 14 × 14 = 616."}, {"id": 42, "lv": "S", "topic": "Bangun Datar", "t": "Keliling lingkaran berdiameter 21 cm (π = 22/7) adalah …", "o": ["33 cm", "132 cm", "462 cm", "66 cm"], "c": 3, "e": "22/7 × 21 = 66."}, {"id": 43, "lv": "S", "topic": "Bangun Datar", "t": "Belah ketupat dengan diagonal 16 cm dan 12 cm memiliki luas …", "o": ["96 cm²", "48 cm²", "144 cm²", "192 cm²"], "c": 0, "e": "1/2 × 16 × 12 = 96."}, {"id": 44, "lv": "S", "topic": "Bangun Datar", "t": "Jajar genjang dengan alas 14 cm dan tinggi 9 cm memiliki luas …", "o": ["46 cm²", "63 cm²", "252 cm²", "126 cm²"], "c": 3, "e": "14 × 9 = 126."}, {"id": 45, "lv": "S", "topic": "Bangun Ruang", "t": "Volume sebuah kubus 512 cm³. Luas seluruh permukaannya adalah …", "o": ["256 cm²", "324 cm²", "512 cm²", "384 cm²"], "c": 3, "e": "Rusuk 8 cm; 6 × 8² = 384."}, {"id": 46, "lv": "S", "topic": "Bangun Ruang", "t": "Alas prisma berbentuk segitiga siku-siku dengan sisi siku-siku 6 cm dan 8 cm. Tinggi prisma 15 cm. Volumenya adalah …", "o": ["360 cm³", "180 cm³", "440 cm³", "720 cm³"], "c": 0, "e": "Luas alas 24; 24 × 15 = 360."}, {"id": 47, "lv": "S", "topic": "Bangun Ruang", "t": "Akuarium berukuran 50 cm × 30 cm × 40 cm diisi air 3/4 bagian. Volume air adalah … liter", "o": ["30", "40", "60", "45"], "c": 3, "e": "Volume 60.000 cm³ = 60 L; 3/4 × 60 = 45 L."}, {"id": 48, "lv": "S", "topic": "Bangun Ruang", "t": "Tabung berjari-jari 7 cm dan tinggi 20 cm terisi penuh air (π = 22/7). Volume air adalah … liter", "o": ["0,308", "3,08", "6,16", "30,8"], "c": 1, "e": "22/7 × 7 × 7 × 20 = 3.080 cm³ = 3,08 liter."}, {"id": 49, "lv": "S", "topic": "Bangun Ruang", "t": "Luas permukaan balok berukuran 10 cm × 6 cm × 4 cm adalah …", "o": ["124 cm²", "240 cm²", "248 cm²", "480 cm²"], "c": 2, "e": "2(10·6 + 10·4 + 6·4) = 2(124) = 248."}, {"id": 50, "lv": "S", "topic": "Pola Bilangan", "t": "Pola bilangan 4, 9, 14, 19, … Suku ke-12 adalah …", "o": ["55", "56", "59", "64"], "c": 2, "e": "4 + 11 × 5 = 59."}, {"id": 51, "lv": "S", "topic": "Pola Bilangan", "t": "Pola bilangan 2, 6, 18, 54, … Suku ke-7 adalah …", "o": ["486", "1.458", "972", "1.296"], "c": 1, "e": "2 × 3⁶ = 1.458."}, {"id": 52, "lv": "S", "topic": "Pola Bilangan", "t": "Batang korek api disusun membentuk deretan persegi: 1 persegi = 4 batang, 2 persegi = 7 batang, 3 persegi = 10 batang, dst. Banyak batang untuk 15 persegi adalah …", "o": ["45 batang", "49 batang", "46 batang", "60 batang"], "c": 2, "e": "Pola 3n + 1 → 3 × 15 + 1 = 46."}, {"id": 53, "lv": "S", "topic": "Pola Bilangan", "t": "Jumlah 10 bilangan ganjil pertama adalah …", "o": ["55", "90", "100", "110"], "c": 2, "e": "Jumlah n bilangan ganjil pertama = n² = 100."}, {"id": 54, "lv": "S", "topic": "Keterbagian", "t": "Angka yang tepat untuk ■ agar bilangan 5■28 habis dibagi 9 adalah …", "o": ["3", "2", "6", "9"], "c": 0, "e": "5 + ■ + 2 + 8 = 15 + ■ harus kelipatan 9 → ■ = 3. (Angka 6 hanya membuatnya habis dibagi 3.)"}, {"id": 55, "lv": "S", "topic": "Keterbagian", "t": "Bilangan yang habis dibagi 4 tetapi TIDAK habis dibagi 8 adalah …", "o": ["3.124", "3.120", "3.126", "3.128"], "c": 0, "e": "124 ÷ 4 = 31 (habis); 124 ÷ 8 = 15,5. Bilangan 3.120 dan 3.128 habis dibagi 8; 3.126 tidak habis dibagi 4."}, {"id": 56, "lv": "S", "topic": "Keterbagian", "t": "Angka yang tepat untuk ■ agar bilangan 4■2 habis dibagi 7 adalah …", "o": ["3", "6", "5", "8"], "c": 1, "e": "462 = 7 × 66, sehingga ■ = 6."}, {"id": 57, "lv": "S", "topic": "Keterbagian", "t": "Bilangan yang habis dibagi 6 adalah …", "o": ["2.514", "2.512", "2.513", "2.516"], "c": 0, "e": "2.514 genap dan jumlah angkanya 12 (habis dibagi 3) → habis dibagi 6."}, {"id": 58, "lv": "S", "topic": "Keterbagian", "t": "Banyak kelipatan 7 di antara 50 dan 100 adalah …", "o": ["7", "6", "8", "9"], "c": 0, "e": "56, 63, 70, 77, 84, 91, 98 → 7 bilangan."}, {"id": 59, "lv": "S", "topic": "Matematika Dasar", "t": "Perbandingan kelereng Ani dan Budi adalah 2 : 3. Jika jumlahnya 45, kelereng Budi ada … butir", "o": ["18", "27", "20", "30"], "c": 1, "e": "45 ÷ 5 = 9; Budi = 3 × 9 = 27."}, {"id": 60, "lv": "S", "topic": "Matematika Dasar", "t": "Enam kilogram beras seharga Rp78.000. Harga 10 kilogram beras adalah …", "o": ["Rp117.000", "Rp120.000", "Rp156.000", "Rp130.000"], "c": 3, "e": "Per kg Rp13.000; 10 × 13.000 = 130.000."}, {"id": 61, "lv": "S", "topic": "Matematika Dasar", "t": "Jika 3x + 7 = 28, maka nilai x adalah …", "o": ["7", "5", "9", "11"], "c": 0, "e": "3x = 21 → x = 7."}, {"id": 62, "lv": "S", "topic": "Matematika Dasar", "t": "Bus berangkat pukul 07.45 dan tiba pukul 11.20. Lama perjalanan adalah …", "o": ["3 jam 25 menit", "3 jam 35 menit", "3 jam 45 menit", "4 jam 35 menit"], "c": 1, "e": "07.45 → 11.45 = 4 jam, dikurangi 25 menit = 3 jam 35 menit."}, {"id": 63, "lv": "S", "topic": "Matematika Dasar", "t": "Median dari data 12, 7, 9, 15, 10 adalah …", "o": ["9", "12", "10,6", "10"], "c": 3, "e": "Urut: 7, 9, 10, 12, 15 → nilai tengah 10 (10,6 adalah rata-rata)."}, {"id": 64, "lv": "K", "topic": "Bilangan", "t": "FPB dari 84 dan 126 adalah …", "o": ["14", "21", "252", "42"], "c": 3, "e": "84 = 2²·3·7; 126 = 2·3²·7; FPB = 2·3·7 = 42 (252 adalah KPK)."}, {"id": 65, "lv": "K", "topic": "Bilangan", "t": "Tiga lampu berkedip setiap 12, 18, dan 20 detik. Jika berkedip bersamaan pada detik ke-0, ketiganya berkedip bersamaan lagi setelah … detik", "o": ["180 detik", "60 detik", "90 detik", "360 detik"], "c": 0, "e": "KPK 12, 18, 20 = 180 detik (3 menit)."}, {"id": 66, "lv": "K", "topic": "Bilangan", "t": "Banyak faktor dari 72 adalah …", "o": ["8", "12", "10", "14"], "c": 1, "e": "72 = 2³·3² → (3+1)(2+1) = 12 faktor."}, {"id": 67, "lv": "K", "topic": "Bilangan", "t": "√1.764 = …", "o": ["32", "44", "52", "42"], "c": 3, "e": "42 × 42 = 1.764."}, {"id": 68, "lv": "K", "topic": "Bilangan", "t": "Jumlah dua bilangan 84 dan selisihnya 18. Bilangan yang lebih besar adalah …", "o": ["33", "51", "42", "66"], "c": 1, "e": "(84 + 18) ÷ 2 = 51; bilangan kecil 33."}, {"id": 69, "lv": "K", "topic": "Bilangan", "t": "Dengan angka 3, 0, 7, 5 (tanpa pengulangan, tidak boleh diawali 0) dibentuk bilangan empat angka terbesar dan terkecil. Selisihnya adalah …", "o": ["4.446", "4.455", "4.473", "7.173"], "c": 2, "e": "Terbesar 7.530, terkecil 3.057 → 7.530 − 3.057 = 4.473."}, {"id": 70, "lv": "K", "topic": "Pecahan", "t": "3 1/3 ÷ 5/6 = …", "o": ["1 7/18", "2 1/2", "5", "4"], "c": 3, "e": "10/3 × 6/5 = 60/15 = 4."}, {"id": 71, "lv": "K", "topic": "Pecahan", "t": "3/5 dari 2/3 dari 90 adalah …", "o": ["36", "24", "54", "60"], "c": 0, "e": "2/3 × 90 = 60; 3/5 × 60 = 36."}, {"id": 72, "lv": "K", "topic": "Pecahan", "t": "Sebuah tali panjangnya 4 1/2 m. Dipotong 1 3/4 m dan 1 1/8 m. Sisa tali adalah … m", "o": ["1 3/8", "1 5/8", "1 1/2", "2 5/8"], "c": 1, "e": "4 4/8 − 1 6/8 − 1 1/8 = 1 5/8 m."}, {"id": 73, "lv": "K", "topic": "Pecahan", "t": "Harga sebuah barang Rp80.000. Harganya naik 25%, kemudian turun 20%. Harga akhirnya adalah …", "o": ["Rp75.000", "Rp84.000", "Rp100.000", "Rp80.000"], "c": 3, "e": "80.000 × 125% = 100.000; 100.000 × 80% = 80.000 (bukan naik 5%)."}, {"id": 74, "lv": "K", "topic": "Pecahan", "t": "Ibu membeli 2,5 kg gula. Sebanyak 3/5 bagian dipakai untuk membuat kue. Sisa gula adalah … gram", "o": ["500 gram", "1.000 gram", "1.500 gram", "2.000 gram"], "c": 1, "e": "2,5 kg = 2.500 g; sisa 2/5 × 2.500 = 1.000 g."}, {"id": 75, "lv": "K", "topic": "Bangun Datar", "t": "Panjang persegi panjang 3 kali lebarnya. Jika kelilingnya 64 cm, luasnya adalah …", "o": ["192 cm²", "128 cm²", "256 cm²", "768 cm²"], "c": 0, "e": "K = 2(3l + l) = 8l = 64 → l = 8, p = 24; luas = 192."}, {"id": 76, "lv": "K", "topic": "Bangun Datar", "t": "Di dalam persegi bersisi 14 cm dibuat lingkaran terbesar (π = 22/7). Luas daerah persegi di luar lingkaran adalah …", "o": ["98 cm²", "154 cm²", "42 cm²", "196 cm²"], "c": 2, "e": "Jari-jari 7 → luas lingkaran 154; 196 − 154 = 42."}, {"id": 77, "lv": "K", "topic": "Bangun Datar", "t": "Persegi panjang 28 cm × 14 cm digabung dengan dua setengah lingkaran berdiameter 14 cm pada kedua sisi sempitnya (π = 22/7). Luas seluruh bangun adalah …", "o": ["392 cm²", "469 cm²", "700 cm²", "546 cm²"], "c": 3, "e": "392 + satu lingkaran penuh (r = 7) 154 = 546."}, {"id": 78, "lv": "K", "topic": "Bangun Datar", "t": "Taman berbentuk persegi panjang 30 m × 20 m dikelilingi jalan selebar 2 m di sisi luarnya. Luas jalan tersebut adalah …", "o": ["216 m²", "200 m²", "264 m²", "816 m²"], "c": 0, "e": "(34 × 24) − (30 × 20) = 816 − 600 = 216."}, {"id": 79, "lv": "K", "topic": "Bangun Datar", "t": "Segitiga siku-siku memiliki sisi siku-siku 9 cm dan 12 cm. Kelilingnya adalah …", "o": ["15 cm", "21 cm", "36 cm", "54 cm"], "c": 2, "e": "Sisi miring √(81+144) = 15; keliling 9 + 12 + 15 = 36."}, {"id": 80, "lv": "K", "topic": "Bangun Ruang", "t": "Kolam berbentuk balok berukuran 10 m × 5 m × 2 m diisi penuh dengan pompa berdebit 250 liter/menit. Waktu yang diperlukan adalah … menit", "o": ["40", "400", "200", "4.000"], "c": 1, "e": "100 m³ = 100.000 L; 100.000 ÷ 250 = 400 menit."}, {"id": 81, "lv": "K", "topic": "Bangun Ruang", "t": "Jika panjang rusuk sebuah kubus diperbesar 2 kali lipat, volumenya menjadi … kali volume semula", "o": ["8", "2", "4", "6"], "c": 0, "e": "(2s)³ = 8s³ → 8 kali."}, {"id": 82, "lv": "K", "topic": "Bangun Ruang", "t": "Bak mandi berukuran 80 cm × 50 cm × 60 cm berisi air 2/3 bagian. Air yang harus ditambahkan sampai penuh adalah … liter", "o": ["80", "60", "120", "160"], "c": 0, "e": "Volume 240.000 cm³ = 240 L; sisa 1/3 × 240 = 80 L."}, {"id": 83, "lv": "K", "topic": "Bangun Ruang", "t": "Kubus-kubus kecil berusuk 2 cm disusun mengisi penuh sebuah balok berukuran 10 cm × 8 cm × 6 cm. Banyak kubus kecil adalah …", "o": ["30 buah", "120 buah", "60 buah", "480 buah"], "c": 2, "e": "Muat 5 × 4 × 3 = 60 kubus (480 ÷ 8 = 60)."}, {"id": 84, "lv": "K", "topic": "Bangun Ruang", "t": "Tabung bervolume 1.540 cm³ dan berjari-jari 7 cm (π = 22/7) memiliki tinggi …", "o": ["5 cm", "20 cm", "22 cm", "10 cm"], "c": 3, "e": "Luas alas 154; 1.540 ÷ 154 = 10 cm."}, {"id": 85, "lv": "K", "topic": "Pola Bilangan", "t": "Pola bilangan 3, 5, 8, 12, 17, … Suku ke-10 adalah …", "o": ["57", "55", "56", "66"], "c": 0, "e": "Bedanya 2, 3, 4, 5, … → 17 + 6 + 7 + 8 + 9 + 10 = 57."}, {"id": 86, "lv": "K", "topic": "Pola Bilangan", "t": "Hasil dari 1 + 2 + 3 + … + 100 adalah …", "o": ["5.050", "5.000", "5.100", "5.150"], "c": 0, "e": "100 × 101 ÷ 2 = 5.050."}, {"id": 87, "lv": "K", "topic": "Pola Bilangan", "t": "Pola bilangan 1, 1, 2, 3, 5, 8, … (tiap suku adalah jumlah dua suku sebelumnya). Suku ke-10 adalah …", "o": ["34", "45", "55", "89"], "c": 2, "e": "1, 1, 2, 3, 5, 8, 13, 21, 34, 55."}, {"id": 88, "lv": "K", "topic": "Pola Bilangan", "t": "Pola bilangan 1, 3, 6, 10, … Suku ke-15 adalah …", "o": ["105", "120", "135", "150"], "c": 1, "e": "n(n+1)/2 = 15 × 16 ÷ 2 = 120."}, {"id": 89, "lv": "K", "topic": "Keterbagian", "t": "Angka terkecil untuk ■ agar bilangan 7.2■4 habis dibagi 8 adalah …", "o": ["2", "1", "4", "8"], "c": 0, "e": "Cukup 3 angka terakhir 2■4: 224 = 8 × 28 dan 264 = 8 × 33 → terkecil ■ = 2."}, {"id": 90, "lv": "K", "topic": "Keterbagian", "t": "Banyak bilangan di antara 100 dan 200 yang habis dibagi 6 dan 9 adalah …", "o": ["5", "6", "7", "11"], "c": 1, "e": "Kelipatan KPK = 18: 108, 126, 144, 162, 180, 198 → 6 bilangan."}, {"id": 91, "lv": "K", "topic": "Keterbagian", "t": "Bilangan empat angka terkecil yang habis dibagi 2, 3, 4, 5, dan 6 sekaligus adalah …", "o": ["1.000", "1.080", "1.020", "1.200"], "c": 2, "e": "KPK = 60; kelipatan 60 pertama ≥ 1.000 adalah 60 × 17 = 1.020."}, {"id": 92, "lv": "K", "topic": "Keterbagian", "t": "Banyak bilangan tiga angka yang habis dibagi 5 dan 7 adalah …", "o": ["26", "25", "27", "28"], "c": 0, "e": "Kelipatan 35 dari 105 sampai 980: (980 − 105) ÷ 35 + 1 = 26."}, {"id": 93, "lv": "K", "topic": "Keterbagian", "t": "Bilangan tiga angka terbesar yang habis dibagi 2, 3, 4, dan 5 sekaligus adalah …", "o": ["900", "980", "990", "960"], "c": 3, "e": "KPK = 60; kelipatan 60 terbesar < 1.000 adalah 60 × 16 = 960."}, {"id": 94, "lv": "K", "topic": "Matematika Dasar", "t": "Uang Ani dan Budi berbanding 3 : 5. Jika selisih uang mereka Rp24.000, jumlah uang mereka adalah …", "o": ["Rp48.000", "Rp96.000", "Rp72.000", "Rp120.000"], "c": 1, "e": "Selisih 2 bagian = 24.000 → 1 bagian = 12.000; jumlah 8 bagian = 96.000."}, {"id": 95, "lv": "K", "topic": "Matematika Dasar", "t": "Dua kota berjarak 330 km. Pukul 07.00 mobil (55 km/jam) berangkat dari kota A dan motor (65 km/jam) dari kota B, saling berlawanan arah. Mereka bertemu pukul …", "o": ["09.30", "09.45", "10.00", "10.15"], "c": 1, "e": "Kecepatan gabungan 120 km/jam; 330 ÷ 120 = 2 3/4 jam = 2 jam 45 menit → 09.45."}, {"id": 96, "lv": "K", "topic": "Matematika Dasar", "t": "Rata-rata nilai 5 siswa adalah 80. Setelah satu siswa bergabung, rata-rata 6 siswa menjadi 82. Nilai siswa yang bergabung adalah …", "o": ["82", "86", "90", "92"], "c": 3, "e": "6 × 82 = 492; 5 × 80 = 400; nilai baru = 92."}, {"id": 97, "lv": "K", "topic": "Matematika Dasar", "t": "Pada peta berskala 1 : 2.000.000, jarak dua kota 3,5 cm. Jarak sebenarnya adalah … km", "o": ["7", "70", "35", "700"], "c": 1, "e": "3,5 × 2.000.000 = 7.000.000 cm = 70 km."}, {"id": 98, "lv": "K", "topic": "Matematika Dasar", "t": "Umur ayah 4 kali umur Ani. Lima tahun lagi jumlah umur mereka 55 tahun. Umur Ani sekarang adalah … tahun", "o": ["8", "10", "9", "11"], "c": 2, "e": "5A + 10 = 55 → A = 9."}, {"id": 99, "lv": "K", "topic": "Matematika Dasar", "t": "Harga 12 pensil Rp30.000. Pensil dijual dengan keuntungan 20% per pensil. Harga jual tiap pensil adalah …", "o": ["Rp2.500", "Rp3.500", "Rp3.000", "Rp3.600"], "c": 2, "e": "Harga beli 2.500; 2.500 × 120% = 3.000."}];
+const LV = {M:"Mudah", S:"Sedang", K:"Sulit"};
+const PLAN = {M:15, S:17, K:18};           // 50 soal: 15 mudah, 17 sedang, 18 sulit
+const KEY = "cbt-bina-prestasi-v2";
+const LIMIT = 40*60*1000;                  // batas waktu 40 menit
+const L = "ABCD";
+const $ = id => document.getElementById(id);
+const byId = {}; BANK.forEach(q => byId[q.id] = q);
+let S = null, tick = null, modalOpen = false, gameOpen = false;
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
+function save(){ try { S.elapsed = elapsed(); localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+function drop(){ try { localStorage.removeItem(KEY); } catch(e){} }
+const GAME_MS = 90*1000;                   // lama istirahat tic tac toe
+function elapsed(){ return S.finished ? S.elapsed : (S.breakStart || Date.now()) - S.t0; }
+function endBreak(){ if (!S.breakStart) return; S.t0 += Math.min(Date.now() - S.breakStart, GAME_MS); S.breakStart = null; save(); }
+function fmt(ms){ const t = Math.floor(ms/1000), h = Math.floor(t/3600), m = Math.floor(t%3600/60), s = t%60;
+  const p = n => String(n).padStart(2,"0"); return h ? h+":"+p(m)+":"+p(s) : p(m)+":"+p(s); }
+function shuffle(a){ for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function draw(){ const out=[]; for (const lv of ["M","S","K"]) out.push(...shuffle(BANK.filter(q=>q.lv===lv)).slice(0,PLAN[lv]).map(q=>q.id)); return out; }
+
+function show(v){ ["vStart","vExam","vRes"].forEach(i => $(i).hidden = i!==v);
+  const ex = v==="vExam"; $("clockBox").hidden = !ex; $("finishTop").hidden = !ex;
+  $("who").textContent = S && v!=="vStart" ? S.name + (S.kelas ? " · " + S.kelas : "") : ""; window.scrollTo(0,0); }
+
+/* ---------- awal ---------- */
+function boot(){
+  S = load();
+  if (S) { S.offers = S.offers || []; S.offered = S.offered || {}; if (S.breakStart) endBreak(); }
+  if (S && S.finished) return showResult();
+  if (S && LIMIT - elapsed() <= 0) { finishNow(true); return; }
+  if (S) { $("resumeBox").hidden = false;
+    const n = Object.keys(S.ans).length;
+    $("resumeTxt").textContent = "Ada ujian yang belum selesai atas nama " + S.name + " (" + n + " dari " + S.ids.length + " soal terjawab).";
+  }
+  show("vStart");
+}
+$("btnResume").onclick = () => { beginExam(); startClock(); };
+$("startForm").onsubmit = e => { e.preventDefault();
+  S = {name:$("inName").value.trim(), kelas:$("inClass").value.trim(), ids:draw(), ans:{}, flag:{}, cur:0, t0:Date.now(), elapsed:0, finished:false, offers:[], offered:{}, breakStart:null};
+  if (!S.name) return; save(); beginExam(); startClock(); };
+function startClock(){ clearInterval(tick);
+  const u = () => { const rem = LIMIT - elapsed(), c = $("clock");
+    c.textContent = fmt(Math.max(0, Math.ceil(rem/1000)*1000));
+    $("clockBox").classList.toggle("crit", rem <= 60000); $("clockBox").classList.toggle("warn", rem > 60000 && rem <= 300000);
+    if (rem <= 0 && !S.finished) finishNow(true); };
+  if (S.finished) return; u(); if (S.finished) return;
+  tick = setInterval(() => { if (S.finished) return clearInterval(tick); u(); if (!S.finished) save(); }, 1000); }
+function beginExam(){ $("qTot").textContent = S.ids.length; show("vExam"); renderGrid(); renderQ(); }
+
+/* ---------- soal ---------- */
+function cur(){ return byId[S.ids[S.cur]]; }
+function renderQ(){
+  const q = cur(), a = S.ans[q.id];
+  const ci = S.cur % 4, qa = $("qNo").parentNode.parentNode.parentNode; qa.style.setProperty("--qc","var(--c"+(ci+1)+")"); qa.style.setProperty("--qi","var(--c"+(ci+1)+"i)");
+  $("qNo").textContent = S.cur + 1; $("qNo2").textContent = S.cur + 1; $("qTopic").textContent = q.topic; $("qText").textContent = q.t;
+  $("opts").innerHTML = q.o.map((o,i) => '<button type="button" class="opt" role="radio" aria-checked="'+(a===i)+'" data-i="'+i+'"><span class="ltr">'+L[i]+'</span><span class="otx">'+esc(o)+'</span></button>').join("");
+  $("opts").querySelectorAll(".opt").forEach(b => b.onclick = () => pick(+b.dataset.i));
+  const f = !!S.flag[q.id]; $("bFlag").setAttribute("aria-pressed", f); $("bFlag").textContent = f ? "Batalkan ragu-ragu" : "Ragu-ragu";
+  $("bClear").hidden = a === undefined;
+  $("bPrev").disabled = S.cur === 0;
+  const last = S.cur === S.ids.length - 1; $("bNext").textContent = last ? "Selesai ujian" : "Berikutnya →";
+  const ch = cheer && a !== undefined ? '<div class="cheer" style="--cc:var(--c'+cheer.c+');--ci:var(--c'+cheer.c+'i)"><span class="ic">'+cheer.ic+'</span><p>'+esc(cheer.t)+'</p></div>' : "";
+  const np = S.offers.length, of = np ? '<div class="offer"><p><b>Kamu sudah menyelesaikan '+S.offers[np-1]+' soal!</b> Mau istirahat 90 detik dan main Tic Tac Toe melawan bot?'+(np > 1 ? ' ('+np+' kesempatan)' : '')+' Waktu ujianmu berhenti selama bermain.</p><div class="row"><button class="btn primary sm" type="button" data-act="play">Main sekarang</button><button class="btn sm" type="button" data-act="skip">Lewati</button></div></div>' : "";
+  $("cheerSlot").innerHTML = ch + of;
+  updNav();
+}
+/* kata penyemangat setelah menjawab (tidak membocorkan benar atau salah) */
+const POOL = ["Mantap, {n}! Jawabanmu sudah tercatat.","Keren! Terus semangat ya, {n}.","Kamu pasti bisa. Lanjut ke soal berikutnya!","Pelan-pelan tapi pasti, kamu hebat!","Bagus! Percaya pada dirimu sendiri.","Satu langkah lagi menuju sukses!","Otakmu sedang berlari kencang!","Setiap soal membuatmu makin pintar.","Tetap fokus ya, {n}. Kamu di jalur yang benar!","Luar biasa, jangan menyerah!","Jempol untukmu! Teruskan!","Yes! Satu soal beres.","Tenang dan teliti, kamu jagonya!","Matematika makin seru kalau dikerjakan dengan semangat!","Kerja bagus, {n}! Lanjutkan."];
+const MIL = {10:"10 soal terjawab! Awal yang luar biasa, {n}.",25:"Setengah jalan! Kamu hebat, pertahankan semangatnya.",40:"Tinggal 10 soal lagi! Sedikit lagi selesai.",50:"Semua soal sudah terjawab! Periksa lagi yang ragu-ragu, lalu selesaikan."};
+const ICONS = ['<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>','<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>','<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 21s-7-4.6-9.3-9C1 8.6 3 5 6.5 5c2 0 3.5 1.1 5.5 3 2-1.9 3.5-3 5.5-3C21 5 23 8.6 21.3 12 19 16.4 12 21 12 21z"/></svg>'];
+let cheer = null, cheerN = 0, lastMsg = -1;
+function makeCheer(first){
+  const n = Object.keys(S.ans).length, nm = (S.name || "").split(/\s+/)[0] || "kamu";
+  let t;
+  if (first && MIL[n]) t = MIL[n]; else { let k; do { k = Math.floor(Math.random() * POOL.length); } while (k === lastMsg); lastMsg = k; t = POOL[k]; }
+  cheerN++; return {t:t.replace(/\{n\}/g, nm), c:cheerN % 4 + 1, ic:ICONS[cheerN % 3]};
+}
+function pick(i){ const q = cur(), first = S.ans[q.id] === undefined; S.ans[q.id] = i; cheer = makeCheer(first);
+  const n = Object.keys(S.ans).length;
+  if (first && n % 10 === 0 && n < S.ids.length && !S.offered[n]) { S.offered[n] = 1; S.offers.push(n); }
+  save(); renderQ(); }
+function go(n){ if (n < 0 || n >= S.ids.length) return; S.cur = n; cheer = null; save(); renderQ(); window.scrollTo({top:0}); }
+$("bPrev").onclick = () => go(S.cur - 1);
+$("bNext").onclick = () => S.cur === S.ids.length - 1 ? openModal() : go(S.cur + 1);
+$("bFlag").onclick = () => { const q = cur(); S.flag[q.id] = !S.flag[q.id]; if (!S.flag[q.id]) delete S.flag[q.id]; save(); renderQ(); };
+$("bClear").onclick = () => { delete S.ans[cur().id]; cheer = null; save(); renderQ(); };
+
+function renderGrid(){ $("grid").innerHTML = S.ids.map((id,i) => '<button type="button" class="qn" data-n="'+i+'" aria-label="Soal '+(i+1)+'">'+(i+1)+'</button>').join("");
+  $("grid").querySelectorAll(".qn").forEach(b => b.onclick = () => go(+b.dataset.n)); }
+function updNav(){
+  $("grid").querySelectorAll(".qn").forEach((b,i) => { const id = S.ids[i];
+    b.className = "qn" + (S.flag[id] ? " flag" : S.ans[id] !== undefined ? " done" : "") + (i === S.cur ? " cur" : "");
+    b.setAttribute("aria-label", "Soal " + (i+1) + (S.flag[id] ? ", ragu-ragu" : S.ans[id] !== undefined ? ", sudah dijawab" : ", belum dijawab")); });
+  const n = Object.keys(S.ans).length; $("progBar").style.width = (n / S.ids.length * 100) + "%"; $("progBar").style.setProperty("--pw", (n ? S.ids.length / n * 100 : 100) + "%");
+  $("progTxt").textContent = n + " dari " + S.ids.length + " soal terjawab";
+}
+
+/* ---------- akhiri ---------- */
+function counts(){ const done = Object.keys(S.ans).length; return {done, blank:S.ids.length - done, flag:Object.keys(S.flag).length}; }
+function openModal(){ const c = counts(); $("tDone").textContent = c.done; $("tBlank").textContent = c.blank; $("tFlag").textContent = c.flag;
+  $("dNote").textContent = c.blank || c.flag ? "Masih ada soal " + [c.blank ? c.blank + " yang kosong" : "", c.flag ? c.flag + " yang ditandai ragu-ragu" : ""].filter(Boolean).join(" dan ") + ". Setelah diselesaikan, jawaban tidak bisa diubah." : "Semua soal sudah dijawab. Setelah diselesaikan, jawaban tidak bisa diubah.";
+  modalOpen = true; $("veil").hidden = false; $("dBack").focus(); }
+function closeModal(){ modalOpen = false; $("veil").hidden = true; }
+$("finishTop").onclick = openModal; $("dBack").onclick = closeModal;
+function finishNow(auto){ if (S.finished) return; closeModal(); S.elapsed = Math.min(elapsed(), LIMIT); S.finished = true; S.auto = !!auto; clearInterval(tick); save(); showResult(); }
+$("dOk").onclick = () => finishNow(false);
+
+/* ---------- hasil ---------- */
+function stat(){
+  const lv = {M:[0,0],S:[0,0],K:[0,0]}, tp = {}; let ok = 0, wrong = 0, nil = 0;
+  S.ids.forEach(id => { const q = byId[id], a = S.ans[id]; tp[q.topic] = tp[q.topic] || [0,0];
+    lv[q.lv][1]++; tp[q.topic][1]++;
+    if (a === undefined) nil++; else if (a === q.c) { ok++; lv[q.lv][0]++; tp[q.topic][0]++; } else wrong++; });
+  return {lv, tp, ok, wrong, nil};
+}
+const LC = {M:'var(--c3)', S:'var(--c2)', K:'var(--c1)'}, TC = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--brand)'];
+function bars(obj, label){ return Object.entries(obj).map(([k,[a,b]],ix) => '<div class="bar"><span>'+esc(label?label(k):k)+'</span><div class="track"><b style="width:'+(b?a/b*100:0)+'%;--bc:'+(label?LC[k]:TC[ix%5])+'"></b></div><span class="v">'+a+'/'+b+'</span></div>').join(""); }
+function showResult(){
+  const r = stat(), n = S.ids.length, sc = Math.round(r.ok / n * 1000) / 10;
+  $("vRes").innerHTML =
+    '<div class="card score"><div class="scorebox"><div><span class="big">'+String(sc).replace(".",",")+'</span><small>dari 100</small></div></div><div>'+
+      '<h1 style="font-size:1.4rem;margin-bottom:4px">Ujian selesai, '+esc(S.name)+'</h1>'+'<p class="cheerline">'+(sc>=85?"Luar biasa! Pertahankan semangatmu.":sc>=70?"Bagus sekali! Sedikit lagi sempurna.":sc>=50?"Lumayan! Pelajari pembahasan lalu coba lagi.":"Jangan menyerah! Setiap latihan membuatmu makin jago.")+'</p>'+
+      '<p style="color:var(--muted);margin-bottom:12px">'+(S.auto?'Waktu 40 menit habis, ujian diselesaikan otomatis. ':'')+'Waktu pengerjaan '+fmt(S.elapsed)+'.</p>'+
+      '<div class="stats"><div class="stat" style="--sc:var(--c3)"><b>'+r.ok+'</b><span>benar</span></div><div class="stat" style="--sc:var(--c1)"><b>'+r.wrong+'</b><span>salah</span></div><div class="stat" style="--sc:var(--c2)"><b>'+r.nil+'</b><span>kosong</span></div></div></div></div>'+
+    '<div class="two"><div class="card"><h2 style="font-size:1rem;margin-bottom:12px">Per tingkat kesulitan</h2><div class="bars">'+bars(r.lv, k => LV[k])+'</div></div>'+
+    '<div class="card"><h2 style="font-size:1rem;margin-bottom:12px">Per materi</h2><div class="bars">'+bars(r.tp)+'</div></div></div>'+
+    '<div class="row" style="justify-content:flex-start"><button class="btn primary" id="newExam" type="button">Ujian baru dengan soal berbeda</button></div>'+
+    '<div class="filters"><h2 style="font-size:1.15rem;margin-right:8px">Pembahasan</h2>'+
+      ['all:Semua','no:Salah','nil:Kosong','ok:Benar'].map((s,i)=>'<button class="btn sm" type="button" data-f="'+s.split(":")[0]+'" aria-pressed="'+(i===0)+'">'+s.split(":")[1]+'</button>').join("")+'</div>'+
+    '<div class="rv" id="rv"></div>';
+  show("vRes");
+  $("newExam").onclick = () => { drop(); S = null; $("resumeBox").hidden = true; $("clockBox").hidden = true; $("startForm").reset(); show("vStart"); };
+  $("vRes").querySelectorAll("[data-f]").forEach(b => b.onclick = () => { $("vRes").querySelectorAll("[data-f]").forEach(x => x.setAttribute("aria-pressed", x===b)); renderReview(b.dataset.f); });
+  renderReview("all");
+}
+function renderReview(f){
+  const items = S.ids.map((id,i) => ({q:byId[id], i, a:S.ans[id]})).filter(x => { const k = x.a === undefined ? "nil" : x.a === x.q.c ? "ok" : "no"; x.k = k; return f==="all" || f===k; });
+  $("rv").innerHTML = items.length ? items.map(({q,i,a,k}) =>
+    '<article class="card rvi"><div class="h"><span class="no">Soal '+(i+1)+'</span><span class="pill '+q.lv+'">'+LV[q.lv]+'</span><span class="pill">'+esc(q.topic)+'</span><span class="st '+k+'">'+(k==="ok"?"Benar":k==="no"?"Salah":"Kosong")+'</span></div>'+
+    '<p>'+esc(q.t)+'</p>'+ q.o.map((o,j) => '<div class="ro'+(j===q.c?" key":j===a?" mine":"")+'"><b>'+L[j]+'</b><span>'+esc(o)+'</span>'+(j===q.c?'<em style="color:var(--good)">Kunci</em>':j===a?'<em style="color:var(--bad)">Jawaban Anda</em>':'')+'</div>').join("")+
+    '<div class="exp"><b>Pembahasan.</b> '+esc(q.e)+'</div></article>').join("") : '<div class="card">Tidak ada soal di kategori ini.</div>';
+}
+
+/* ---------- istirahat: tic tac toe lawan bot ---------- */
+$("cheerSlot").onclick = e => { const b = e.target.closest("[data-act]"); if (!b) return;
+  if (b.dataset.act === "play") openGame(); else { S.offers = []; save(); renderQ(); } };
+const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+let G = null, gTick = null, gWait = null;
+const pickOne = a => a[Math.floor(Math.random() * a.length)];
+function winLine(b){ for (const l of LINES) if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[0]] === b[l[2]]) return l; return null; }
+function needMove(b, m){ for (const l of LINES) { const v = l.map(i => b[i]); if (v.filter(x => x === m).length === 2 && v.includes("")) return l[v.indexOf("")]; } return -1; }
+function botMove(b){ const free = b.map((v,i) => v ? -1 : i).filter(i => i >= 0);
+  if (Math.random() < 0.2) return pickOne(free);                // sesekali salah langkah supaya bisa dikalahkan
+  let m = needMove(b, "O"); if (m < 0) m = needMove(b, "X");
+  if (m >= 0) return m; if (!b[4]) return 4;
+  const cor = [0,2,6,8].filter(i => !b[i]); return cor.length ? pickOne(cor) : pickOne(free); }
+function openGame(){
+  if (!S.offers.length) return; S.offers.pop(); S.breakStart = Date.now(); save();
+  G = {b:Array(9).fill(""), turn:"X", over:false, round:0, w:0, d:0, l:0, end:Date.now() + GAME_MS, done:false};
+  $("board").innerHTML = G.b.map((_, i) => '<button type="button" class="cell" data-i="'+i+'" aria-label="Kotak '+(i+1)+'"></button>').join("");
+  $("board").onclick = e => { const c = e.target.closest(".cell"); if (c) play(+c.dataset.i); };
+  $("gStop").textContent = "Kembali ke soal"; gameOpen = true; $("gveil").hidden = false; $("gStop").focus();
+  newRound(); gTick = setInterval(gameTick, 250); gameTick(); renderQ();
+}
+function paint(win){ $("board").querySelectorAll(".cell").forEach((c,i) => { c.textContent = G.b[i]; c.className = "cell " + G.b[i] + (win && win.includes(i) ? " win" : "");
+  c.disabled = G.over || G.done || !!G.b[i] || G.turn !== "X"; });
+  $("gW").textContent = G.w; $("gD").textContent = G.d; $("gL").textContent = G.l; }
+function newRound(){ clearTimeout(gWait); G.b = Array(9).fill(""); G.over = false; G.turn = G.round % 2 ? "O" : "X"; G.round++;
+  $("gMsg").textContent = G.turn === "X" ? "Giliranmu (X)" : "Bot sedang berpikir…"; paint(); if (G.turn === "O") botTurn(); }
+function botTurn(){ gWait = setTimeout(() => { if (G.done || G.over) return; G.b[botMove(G.b)] = "O"; G.turn = "X"; settle(); }, 450); }
+function play(i){ if (G.over || G.done || G.b[i] || G.turn !== "X") return; G.b[i] = "X"; G.turn = "O"; if (!settle()) botTurn(); }
+function settle(){ const w = winLine(G.b), full = G.b.every(Boolean);
+  if (!w && !full) { $("gMsg").textContent = G.turn === "X" ? "Giliranmu (X)" : "Bot sedang berpikir…"; paint(); return false; }
+  G.over = true; const who = w ? G.b[w[0]] : "";
+  if (who === "X") { G.w++; $("gMsg").textContent = "Kamu menang! Hebat!"; } else if (who === "O") { G.l++; $("gMsg").textContent = "Bot menang kali ini. Coba lagi!"; } else { G.d++; $("gMsg").textContent = "Seri! Sama kuat."; }
+  paint(w); if (Date.now() < G.end - 1500) gWait = setTimeout(newRound, 1500); return true; }
+function gameTick(){ const rem = Math.max(0, G.end - Date.now()), t = Math.ceil(rem / 1000);
+  $("gClock").textContent = Math.floor(t/60) + ":" + String(t % 60).padStart(2, "0"); $("gBar").style.width = (rem / GAME_MS * 100) + "%";
+  if (rem <= 0 && !G.done) { G.done = true; clearTimeout(gWait); clearInterval(gTick); endBreak();
+    $("gMsg").textContent = "Waktu istirahat habis! Menang " + G.w + ", seri " + G.d + ", kalah " + G.l + ". Ayo lanjut mengerjakan!"; $("gStop").textContent = "Lanjut mengerjakan"; paint(); } }
+$("gStop").onclick = () => { clearInterval(gTick); clearTimeout(gWait); endBreak(); G = null; gameOpen = false; $("gveil").hidden = true; startClock(); renderQ(); };
+
+/* ---------- papan ketik ---------- */
+document.addEventListener("keydown", e => {
+  if (!S || $("vExam").hidden || e.target.closest("input,textarea") || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (gameOpen) return;
+  if (modalOpen) { if (e.key === "Escape") closeModal(); return; }
+  const k = e.key.toLowerCase(), i = "abcd".indexOf(k);
+  if (i >= 0 && k.length === 1) { pick(i); }
+  else if (e.key === "ArrowRight") go(S.cur + 1);
+  else if (e.key === "ArrowLeft") go(S.cur - 1);
+  else if (k === "r") $("bFlag").click();
+});
+boot();
+</script>
+
+</body>
+</html>
